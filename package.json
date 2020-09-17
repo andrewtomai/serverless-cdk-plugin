@@ -1,0 +1,51 @@
+{
+  "name": "serverless-cdk-plugin",
+  "version": "0.1.0",
+  "description": "A Serverless plugin to add aws-cdk stacks to your serverless projects",
+  "repository": "https://github.com/andrewtomai/serverless-cdk-plugin",
+  "author": "Andrew Tomai",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/jest": "^26.0.13",
+    "@types/node": "^14.10.0",
+    "@types/ramda": "^0.27.17",
+    "@types/serverless": "^1.72.6",
+    "@types/sinon": "^9.0.5",
+    "aws-cdk": "^1.63.0",
+    "jest": "^26.4.2",
+    "serverless": "^2.0.0",
+    "sinon": "^9.0.3",
+    "ts-jest": "^26.3.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "ramda": "^0.27.1"
+  },
+  "peerDependencies": {
+    "aws-cdk": "^1.63.0",
+    "serverless": "^2.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/test"
+    ],
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
+  }
+}

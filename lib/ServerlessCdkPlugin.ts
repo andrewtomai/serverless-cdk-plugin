@@ -1,31 +1,18 @@
-import * as R from 'ramda';
 import * as Serverless from 'serverless';
-import { spawnSync } from 'child_process';
-import { synthesizeCdkStack, StackOptions } from './helpers/cdk';
+import * as Types from './helpers/types';
+import * as PluginOptions from './helpers/plugin-options';
 import { mergeTemplates } from './helpers/template';
-
-interface hook {
-    (): Promise<void> | void;
-}
-
-interface hooks {
-    [propName: string]: hook
-}
-
-interface Synthesizer {
-    (cdkResourceOptions: StackOptions): any;
-}
 
 class ServerlessCdkPlugin {
     serverless: Serverless;
-    hooks: hooks;
+    hooks: Types.hooks;
     options: Serverless.Options;
-    synthesizer: Synthesizer;
+    synthesizer: Types.Synthesizer;
 
-    constructor(serverless: Serverless, options: Serverless.Options, { synthesizer = synthesizeCdkStack(spawnSync) }: { synthesizer?: Synthesizer } = {}) {
+    constructor(serverless: Serverless, options: Serverless.Options, { synthesizer }: { synthesizer?: Types.Synthesizer } = {}) {
         this.serverless = serverless;
         this.options = options;
-        this.synthesizer = synthesizer;
+        this.synthesizer = synthesizer || PluginOptions.getSynthesizer(this.serverless);
         this.hooks = {
             'after:aws:package:finalize:mergeCustomProviderResources': this.mergeCdkResources,
         };
@@ -35,13 +22,12 @@ class ServerlessCdkPlugin {
         this.serverless.cli.log(`[serverless-cdk-plugin] ${message}`)
     }
 
-    mergeCdkResources: hook = () => {
+    mergeCdkResources: Types.hook = () => {
         const compiledCloudFormationTemplate = this.serverless.service.provider.compiledCloudFormationTemplate;
-        
-        const customCdkResources: StackOptions = R.pathOr({}, ['service', 'custom', 'CdkResources'], this.serverless);
+        const context = PluginOptions.getContext(this.serverless);
         // compile cdk resources
         this.log('Compiling CDK Resources');
-        const compiledCdkTemplate = this.synthesizer(customCdkResources);
+        const compiledCdkTemplate = this.synthesizer(context);
         
         // merge into current resources
         this.log('Merging CDK Resources into serverless cloudformation stack');

@@ -12,14 +12,20 @@ interface hooks {
     [propName: string]: hook
 }
 
+interface Synthesizer {
+    (cdkResourceOptions: StackOptions): any;
+}
+
 class ServerlessCdkPlugin {
     serverless: Serverless;
     hooks: hooks;
     options: Serverless.Options;
+    synthesizer: Synthesizer;
 
-    constructor(serverless: Serverless, options: Serverless.Options) {
+    constructor(serverless: Serverless, options: Serverless.Options, { synthesizer = synthesizeCdkStack(spawnSync) }: { synthesizer?: Synthesizer } = {}) {
         this.serverless = serverless;
         this.options = options;
+        this.synthesizer = synthesizer;
         this.hooks = {
             'after:aws:package:finalize:mergeCustomProviderResources': this.mergeCdkResources,
         };
@@ -35,7 +41,7 @@ class ServerlessCdkPlugin {
         const customCdkResources: StackOptions = R.pathOr({}, ['service', 'custom', 'CdkResources'], this.serverless);
         // compile cdk resources
         this.log('Compiling CDK Resources');
-        const compiledCdkTemplate = synthesizeCdkStack(spawnSync)(customCdkResources);
+        const compiledCdkTemplate = this.synthesizer(customCdkResources);
         
         // merge into current resources
         this.log('Merging CDK Resources into serverless cloudformation stack');

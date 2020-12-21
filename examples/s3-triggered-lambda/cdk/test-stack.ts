@@ -5,7 +5,11 @@ class MyStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         // create a new s3 bucket
-        const bucket = new s3.Bucket(this, 'MyS3Bucket');
+        const stage = this.node.tryGetContext('stage');
+        const bucket = new s3.Bucket(this, 'MyS3Bucket', {
+            bucketName: stage + '-randyboi'
+        });
+        
 
         // override the logical cloudformation id so that we can reference the bucket
         // in our serverless.yml file

@@ -20,5 +20,5 @@
       "typeRoots": ["./node_modules/@types"],
       "outDir": "dist"
     },
-    "exclude": ["cdk.out", "test", "dist"]
+    "exclude": ["cdk.out", "test", "dist", "examples"]
   }

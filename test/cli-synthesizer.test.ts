@@ -1,3 +1,4 @@
+import { spawnSync } from 'child_process';
 import * as sinon from 'sinon'
 import * as cdk from '../lib/helpers/synthesizers/cli-synthesizer';
 describe('Scenario: I want to use the Cli Synthesizer', () => {
@@ -15,7 +16,7 @@ describe('Scenario: I want to use the Cli Synthesizer', () => {
         });
         const context = { hiya: 'there' }
         describe('When I synthesize the cdk stack', () => {
-            const actual = cdk.synthesize(spawnSyncStub)(context);
+            const actual = cdk.synthesize(context, { spawnSync: spawnSyncStub });
             test('Then I get back the expected stack', () => {
                 expect(actual).toStrictEqual({ hello: 'world' });
             })
